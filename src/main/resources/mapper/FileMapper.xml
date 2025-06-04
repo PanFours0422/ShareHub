@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sharehub.mapper.FileMapper">
+    <!-- 基础列 -->
+    <sql id="Base_Column_List">
+        id, user_id, file_name, file_path, file_size, file_type, create_time, update_time, status
+    </sql>
+
+    <!-- 插入文件 -->
+    <insert id="insert" parameterType="com.sharehub.entity.File" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file (user_id, file_name, file_path, file_size, file_type)
+        VALUES (#{userId}, #{fileName}, #{filePath}, #{fileSize}, #{fileType})
+    </insert>
+
+    <!-- 根据ID查询文件 -->
+    <select id="selectById" resultType="com.sharehub.entity.File">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE id = #{id}
+        AND status = 1
+    </select>
+
+    <!-- 根据用户ID查询文件列表 -->
+    <select id="selectByUserId" resultType="com.sharehub.entity.File">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId}
+        AND status = 1
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 分页查询文件列表 -->
+    <select id="selectPage" resultType="com.sharehub.entity.File">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file
+        WHERE user_id = #{userId}
+        AND status = 1
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <!-- 统计用户文件总数 -->
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM file
+        WHERE user_id = #{userId}
+        AND status = 1
+    </select>
+
+    <!-- 更新文件状态 -->
+    <update id="updateStatus">
+        UPDATE file
+        SET status = #{status},
+            update_time = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除文件记录 -->
+    <delete id="deleteById">
+        DELETE FROM file
+        WHERE id = #{id}
+    </delete>
+</mapper> 
