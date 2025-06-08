@@ -78,4 +78,9 @@ public class UserServiceImpl implements UserService {
     public boolean isEmailExists(String email) {
         return userMapper.selectByEmail(email) != null;
     }
+
+    @Override
+    public boolean isPhoneExists(String phone) {
+        return userMapper.selectByPhone(phone) != null;
+    }
 } 

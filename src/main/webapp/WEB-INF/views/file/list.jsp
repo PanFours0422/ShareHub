@@ -211,7 +211,7 @@
 
             <div class="file-grid">
                 <c:forEach items="${files}" var="file">
-                    <div class="file-card">
+                    <div class="file-card" data-file-id="${file.id}">
                         <div class="file-actions">
                             <button class="action-btn" title="分享">
                                 <i class="fas fa-share-alt"></i>
@@ -225,16 +225,16 @@
                         </div>
                         <div class="file-icon">
                             <c:choose>
-                                <c:when test="${file.type == 'image'}">
+                                <c:when test="${file.fileType.startsWith('image/')}">
                                     <i class="fas fa-image"></i>
                                 </c:when>
-                                <c:when test="${file.type == 'document'}">
+                                <c:when test="${file.fileType.startsWith('application/pdf') || file.fileType.startsWith('application/msword') || file.fileType.startsWith('application/vnd.openxmlformats-officedocument')}">
                                     <i class="fas fa-file-alt"></i>
                                 </c:when>
-                                <c:when test="${file.type == 'video'}">
+                                <c:when test="${file.fileType.startsWith('video/')}">
                                     <i class="fas fa-video"></i>
                                 </c:when>
-                                <c:when test="${file.type == 'audio'}">
+                                <c:when test="${file.fileType.startsWith('audio/')}">
                                     <i class="fas fa-music"></i>
                                 </c:when>
                                 <c:otherwise>
@@ -242,9 +242,9 @@
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                        <div class="file-name">${file.name}</div>
+                        <div class="file-name">${file.fileName}</div>
                         <div class="file-info">
-                            ${file.size} · ${file.uploadTime}
+                            ${file.fileSize} · ${file.createTime}
                         </div>
                     </div>
                 </c:forEach>
@@ -272,7 +272,7 @@
                 var formData = new FormData();
                 
                 for (var i = 0; i < files.length; i++) {
-                    formData.append('files', files[i]);
+                    formData.append('file', files[i]);
                 }
                 
                 $.ajax({
@@ -285,7 +285,7 @@
                         if (response === 'success') {
                             location.reload();
                         } else {
-                            alert('上传失败：' + response);
+                            alert( response);
                         }
                     },
                     error: function() {
@@ -306,17 +306,17 @@
                         // 实现分享功能
                         break;
                     case '下载':
-                        window.location.href = '${pageContext.request.contextPath}/file/download?filename=' + encodeURIComponent(fileName);
+                        var fileId = fileCard.data('file-id');
+                        window.location.href = '${pageContext.request.contextPath}/file/download/' + fileId;
                         break;
                     case '删除':
                         if (confirm('确定要删除文件 "' + fileName + '" 吗？')) {
-                            $.post('${pageContext.request.contextPath}/file/delete', {
-                                filename: fileName
-                            }, function(response) {
-                                if (response === 'success') {
+                            var fileId = fileCard.data('file-id');
+                            $.post('${pageContext.request.contextPath}/file/delete/' + fileId, function(response) {
+                                if (response === '删除成功') {
                                     fileCard.fadeOut();
                                 } else {
-                                    alert('删除失败：' + response);
+                                    alert(response);
                                 }
                             });
                         }

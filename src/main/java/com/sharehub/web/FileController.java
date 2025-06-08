@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -101,9 +103,22 @@ public class FileController {
             return;
         }
 
-        response.setContentType(file.getFileType());
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + file.getFileName() + "\"");
-        Files.copy(filePath, response.getOutputStream());
+        // 设置响应头
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + 
+            new String(file.getFileName().getBytes("UTF-8"), "ISO-8859-1") + "\"");
+        response.setHeader("Content-Length", String.valueOf(Files.size(filePath)));
+        
+        // 写入响应流
+        try (InputStream in = Files.newInputStream(filePath);
+             OutputStream out = response.getOutputStream()) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            out.flush();
+        }
     }
 
     @PostMapping("/delete/{id}")

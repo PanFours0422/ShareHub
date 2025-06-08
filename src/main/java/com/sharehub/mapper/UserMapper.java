@@ -2,6 +2,7 @@ package com.sharehub.mapper;
 
 import com.sharehub.entity.User;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper {
@@ -25,4 +26,11 @@ public interface UserMapper {
      * @return 用户信息
      */
     User selectByEmail(String email);
+
+    /**
+     * 根据电话查询用户
+     * @param phone 电话
+     * @return 用户信息
+     */
+    User selectByPhone(String phone);
 } 

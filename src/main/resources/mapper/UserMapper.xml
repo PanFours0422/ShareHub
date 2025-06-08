@@ -5,13 +5,13 @@
 <mapper namespace="com.sharehub.mapper.UserMapper">
     <!-- 基础列 -->
     <sql id="Base_Column_List">
-        id, username, password, email, create_time, update_time, status
+        id, username, password, email, phone, create_time, update_time, status
     </sql>
 
     <!-- 插入用户 -->
     <insert id="insert" parameterType="com.sharehub.entity.User" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user (username, password, email, status)
-        VALUES (#{username}, #{password}, #{email}, #{status})
+        INSERT INTO user (username, password, email, phone, status)
+        VALUES (#{username}, #{password}, #{email}, #{phone}, #{status})
     </insert>
 
     <!-- 根据用户名查询用户 -->
@@ -27,6 +27,14 @@
         SELECT <include refid="Base_Column_List"/>
         FROM user
         WHERE email = #{email}
+        AND status = 1
+    </select>
+
+    <!-- 根据电话查询用户 -->
+    <select id="selectByPhone" resultType="com.sharehub.entity.User">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE phone = #{phone}
         AND status = 1
     </select>
 </mapper> 

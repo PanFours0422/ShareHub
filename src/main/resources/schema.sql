@@ -9,11 +9,13 @@ CREATE TABLE IF NOT EXISTS user (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL UNIQUE,
     create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     status TINYINT DEFAULT 1,
     INDEX idx_username (username),
-    INDEX idx_email (email)
+    INDEX idx_email (email),
+    INDEX idx_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 创建文件表

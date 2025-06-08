@@ -31,4 +31,11 @@ public interface UserService {
      * @return 是否存在
      */
     boolean isEmailExists(String email);
+
+    /**
+     * 检查电话是否存在
+     * @param phone 电话
+     * @return 是否存在
+     */
+    boolean isPhoneExists(String phone);
 } 

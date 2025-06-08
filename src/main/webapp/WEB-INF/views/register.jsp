@@ -1,5 +1,4 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,164 +10,174 @@
     <!-- Font Awesome -->
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+        }
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
-            padding: 0;
         }
-        .container {
-            width: 100%;
-            max-width: 100%;
-            padding: 15px;
-            margin: 0;
-        }
+        
         .register-container {
-            width: 400px;
-            margin: 0 auto;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
         }
-        .form-title {
+        
+        .register-title {
             text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
         }
-        .form-control {
-            border-radius: 8px;
-            padding: 12px;
-            border: 1px solid #ddd;
-            width: 280px;
-            margin: 0 auto;
-            display: block;
-        }
+        
         .form-control:focus {
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            border-color: #667eea;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25);
         }
-        .input-group {
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-        .input-group i {
-            color: #667eea;
-            margin-right: 8px;
-            font-size: 1.1em;
-        }
-        .btn-primary {
-            background: linear-gradient(to right, #667eea, #764ba2);
+        
+        .btn-register {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             border: none;
-            border-radius: 8px;
-            padding: 12px;
+            color: white;
+            padding: 0.8rem;
+            border-radius: 5px;
+            width: 100%;
             font-weight: 500;
-            transition: all 0.3s ease;
-            width: 200px;
-            margin: 0 auto;
-            display: block;
+            margin-top: 1rem;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        
+        .btn-register:hover {
+            background: linear-gradient(to right, var(--secondary-color), var(--primary-color));
+            color: white;
         }
-        .form-floating {
-            margin-bottom: 1rem;
-        }
-        .error-message {
-            color: #dc3545;
-            margin-top: 10px;
-            text-align: center;
-            display: none;
-        }
+        
         .login-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 1rem;
         }
+        
         .login-link a {
-            color: #667eea;
+            color: var(--primary-color);
             text-decoration: none;
-            font-weight: 500;
         }
+        
         .login-link a:hover {
-            color: #764ba2;
+            text-decoration: underline;
         }
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
+        
+        .input-group-text {
+            background-color: white;
+            border-right: none;
         }
-        .logo i {
-            font-size: 48px;
-            color: #667eea;
+        
+        .form-control {
+            border-left: none;
         }
-        .form-text {
-            color: #6c757d;
-            font-size: 0.875em;
-            margin-top: 0.25rem;
+        
+        .input-group:focus-within {
+            box-shadow: 0 0 0 0.2rem rgba(102,126,234,0.25);
         }
-        .password-strength {
-            height: 5px;
-            margin-top: 5px;
-            border-radius: 3px;
-            transition: all 0.3s ease;
+        
+        .input-group:focus-within .input-group-text,
+        .input-group:focus-within .form-control {
+            border-color: var(--primary-color);
         }
-        .strength-weak {
-            background-color: #dc3545;
-            width: 33%;
+        
+        .verification-code-group {
+            display: flex;
+            gap: 10px;
         }
-        .strength-medium {
-            background-color: #ffc107;
-            width: 66%;
+        
+        .verification-code-group .form-control {
+            flex: 1;
         }
-        .strength-strong {
-            background-color: #28a745;
-            width: 100%;
+        
+        .verification-code-group .btn {
+            width: 120px;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="register-container">
-            <div class="logo">
-                <i class="fas fa-share-alt"></i>
-            </div>
-            <h2 class="form-title">创建您的 ShareHub 账号</h2>
-            <form id="registerForm" method="post">
+    <div class="register-container">
+        <h2 class="register-title">
+            <i class="fas fa-user-plus"></i> 注册账号
+        </h2>
+        <form id="registerForm">
+            <div class="mb-3">
                 <div class="input-group">
-                    <i class="fas fa-user"></i>
+                    <span class="input-group-text">
+                        <i class="fas fa-user"></i>
+                    </span>
                     <input type="text" class="form-control" id="username" name="username" placeholder="用户名" required>
-                    <div class="form-text" id="usernameFeedback"></div>
                 </div>
+                <div class="invalid-feedback" id="usernameFeedback"></div>
+            </div>
+            
+            <div class="mb-3">
                 <div class="input-group">
-                    <i class="fas fa-envelope"></i>
+                    <span class="input-group-text">
+                        <i class="fas fa-envelope"></i>
+                    </span>
                     <input type="email" class="form-control" id="email" name="email" placeholder="邮箱" required>
-                    <div class="form-text" id="emailFeedback"></div>
                 </div>
+                <div class="invalid-feedback" id="emailFeedback"></div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="input-group verification-code-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-phone"></i>
+                    </span>
+                    <input type="tel" class="form-control" id="phone" name="phone" placeholder="手机号码" required>
+                    <button type="button" class="btn btn-outline-primary" id="sendCodeBtn">获取验证码</button>
+                </div>
+                <div class="invalid-feedback" id="phoneFeedback"></div>
+            </div>
+            
+            <div class="mb-3">
                 <div class="input-group">
-                    <i class="fas fa-lock"></i>
+                    <span class="input-group-text">
+                        <i class="fas fa-shield-alt"></i>
+                    </span>
+                    <input type="text" class="form-control" id="verificationCode" name="verificationCode" placeholder="验证码" required>
+                </div>
+                <div class="invalid-feedback" id="verificationCodeFeedback"></div>
+            </div>
+            
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
                     <input type="password" class="form-control" id="password" name="password" placeholder="密码" required>
-                    <div class="password-strength"></div>
                 </div>
+                <div class="invalid-feedback" id="passwordFeedback"></div>
+            </div>
+            
+            <div class="mb-3">
                 <div class="input-group">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" class="form-control" id="confirmPassword" placeholder="确认密码" required>
+                    <span class="input-group-text">
+                        <i class="fas fa-lock"></i>
+                    </span>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" placeholder="确认密码" required>
                 </div>
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-user-plus"></i> 注册
-                    </button>
-                </div>
-                <div class="login-link">
-                    <a href="${pageContext.request.contextPath}/user/login">
-                        <i class="fas fa-sign-in-alt"></i> 已有账号？立即登录
-                    </a>
-                </div>
-                <div id="errorMessage" class="error-message"></div>
-            </form>
+                <div class="invalid-feedback" id="confirmPasswordFeedback"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-register">注册</button>
+        </form>
+        
+        <div class="login-link">
+            已有账号？<a href="${pageContext.request.contextPath}/user/login">立即登录</a>
         </div>
     </div>
 
@@ -178,107 +187,194 @@
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(document).ready(function() {
-            // 检查用户名是否可用
+            // 用户名验证
             $('#username').on('blur', function() {
                 var username = $(this).val();
-                if (username) {
-                    $.get('${pageContext.request.contextPath}/user/checkUsername', {username: username}, function(response) {
-                        if (response === 'exists') {
-                            $('#usernameFeedback').text('用户名已被使用').css('color', 'red');
-                        } else {
-                            $('#usernameFeedback').text('用户名可用').css('color', 'green');
-                        }
-                    });
-                }
-            });
-
-            // 检查邮箱是否可用
-            $('#email').on('blur', function() {
-                var email = $(this).val();
-                if (email) {
-                    $.get('${pageContext.request.contextPath}/user/checkEmail', {email: email}, function(response) {
-                        if (response === 'exists') {
-                            $('#emailFeedback').text('邮箱已被注册').css('color', 'red');
-                        } else {
-                            $('#emailFeedback').text('邮箱可用').css('color', 'green');
-                        }
-                    });
-                }
-            });
-
-            // 密码强度检测
-            $('#password').on('input', function() {
-                var password = $(this).val();
-                var strength = $('.password-strength');
-                
-                if (password.length === 0) {
-                    strength.removeClass('strength-weak strength-medium strength-strong');
+                if (username.length < 3) {
+                    $(this).addClass('is-invalid');
+                    $('#usernameFeedback').text('用户名至少需要3个字符');
                     return;
                 }
                 
-                var hasLetter = /[A-Za-z]/.test(password);
-                var hasNumber = /[0-9]/.test(password);
-                var hasSpecial = /[!@#$%^&*]/.test(password);
-                
-                strength.removeClass('strength-weak strength-medium strength-strong');
-                
-                if (password.length < 6) {
-                    strength.addClass('strength-weak');
-                } else if (hasLetter && hasNumber) {
-                    if (hasSpecial) {
-                        strength.addClass('strength-strong');
+                $.post('${pageContext.request.contextPath}/user/checkUsername', {username: username}, function(response) {
+                    if (response === 'exists') {
+                        $('#username').addClass('is-invalid');
+                        $('#usernameFeedback').text('用户名已存在');
                     } else {
-                        strength.addClass('strength-medium');
+                        $('#username').removeClass('is-invalid').addClass('is-valid');
+                        $('#usernameFeedback').text('');
                     }
+                });
+            });
+            
+            // 邮箱验证
+            $('#email').on('blur', function() {
+                var email = $(this).val();
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                
+                if (!emailRegex.test(email)) {
+                    $(this).addClass('is-invalid');
+                    $('#emailFeedback').text('请输入有效的邮箱地址');
+                    return;
+                }
+                
+                $.post('${pageContext.request.contextPath}/user/checkEmail', {email: email}, function(response) {
+                    if (response === 'exists') {
+                        $('#email').addClass('is-invalid');
+                        $('#emailFeedback').text('邮箱已被注册');
+                    } else {
+                        $('#email').removeClass('is-invalid').addClass('is-valid');
+                        $('#emailFeedback').text('');
+                    }
+                });
+            });
+            
+            // 手机号验证
+            $('#phone').on('blur', function() {
+                var phone = $(this).val();
+                var phoneRegex = /^1[3-9]\d{9}$/;
+                
+                if (!phoneRegex.test(phone)) {
+                    $(this).addClass('is-invalid');
+                    $('#phoneFeedback').text('请输入有效的手机号码');
+                    return;
+                }
+                
+                $.post('${pageContext.request.contextPath}/user/checkPhone', {phone: phone}, function(response) {
+                    if (response === 'exists') {
+                        $('#phone').addClass('is-invalid');
+                        $('#phoneFeedback').text('手机号已被注册');
+                    } else {
+                        $('#phone').removeClass('is-invalid').addClass('is-valid');
+                        $('#phoneFeedback').text('');
+                    }
+                });
+            });
+            
+            // 发送验证码
+            $('#sendCodeBtn').on('click', function() {
+                var phone = $('#phone').val();
+                var phoneRegex = /^1[3-9]\d{9}$/;
+                
+                if (!phoneRegex.test(phone)) {
+                    $('#phone').addClass('is-invalid');
+                    $('#phoneFeedback').text('请输入有效的手机号码');
+                    return;
+                }
+                
+                var $btn = $(this);
+                $btn.prop('disabled', true);
+                var countdown = 60;
+                
+                $.post('${pageContext.request.contextPath}/user/sendCode', {phone: phone}, function(response) {
+                    if (response === 'success') {
+                        var timer = setInterval(function() {
+                            if (countdown > 0) {
+                                $btn.text(countdown + '秒后重试');
+                                countdown--;
+                            } else {
+                                clearInterval(timer);
+                                $btn.prop('disabled', false).text('获取验证码');
+                            }
+                        }, 1000);
+                    } else {
+                        alert(response);
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // 验证码验证
+            $('#verificationCode').on('blur', function() {
+                var code = $(this).val();
+                var phone = $('#phone').val();
+                
+                if (code.length !== 6) {
+                    $(this).addClass('is-invalid');
+                    $('#verificationCodeFeedback').text('请输入6位验证码');
+                    return;
+                }
+                
+                $.post('${pageContext.request.contextPath}/user/verifyCode', {
+                    phone: phone,
+                    code: code
+                }, function(response) {
+                    if (response === 'success') {
+                        $('#verificationCode').removeClass('is-invalid').addClass('is-valid');
+                        $('#verificationCodeFeedback').text('');
+                    } else {
+                        $('#verificationCode').addClass('is-invalid');
+                        $('#verificationCodeFeedback').text(response);
+                    }
+                });
+            });
+            
+            // 密码验证
+            $('#password').on('input', function() {
+                var password = $(this).val();
+                if (password.length < 6) {
+                    $(this).addClass('is-invalid');
+                    $('#passwordFeedback').text('密码至少需要6个字符');
                 } else {
-                    strength.addClass('strength-weak');
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    $('#passwordFeedback').text('');
                 }
             });
-
+            
+            // 确认密码验证
+            $('#confirmPassword').on('input', function() {
+                var password = $('#password').val();
+                var confirmPassword = $(this).val();
+                
+                if (password !== confirmPassword) {
+                    $(this).addClass('is-invalid');
+                    $('#confirmPasswordFeedback').text('两次输入的密码不一致');
+                } else {
+                    $(this).removeClass('is-invalid').addClass('is-valid');
+                    $('#confirmPasswordFeedback').text('');
+                }
+            });
+            
             // 表单提交
             $('#registerForm').on('submit', function(e) {
                 e.preventDefault();
                 
-                // 验证密码
-                if ($('#password').val() !== $('#confirmPassword').val()) {
-                    $('#errorMessage').text('两次输入的密码不一致').show();
-                    return false;
-                }
-
-                // 验证密码强度
+                // 验证所有字段
+                var username = $('#username').val();
+                var email = $('#email').val();
+                var phone = $('#phone').val();
+                var verificationCode = $('#verificationCode').val();
                 var password = $('#password').val();
-                if (password.length < 6 || !/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
-                    $('#errorMessage').text('密码必须至少6位，包含字母和数字').show();
-                    return false;
+                var confirmPassword = $('#confirmPassword').val();
+                
+                if (!username || !email || !phone || !verificationCode || !password || !confirmPassword) {
+                    alert('请填写所有必填字段');
+                    return;
                 }
-
+                
+                if (password !== confirmPassword) {
+                    alert('两次输入的密码不一致');
+                    return;
+                }
+                
                 // 发送注册请求
-                $.ajax({
-                    url: '${pageContext.request.contextPath}/user/register',
-                    type: 'POST',
-                    data: {
-                        username: $('#username').val(),
-                        email: $('#email').val(),
-                        password: $('#password').val()
-                    },
-                    success: function(response) {
-                        console.log('注册响应:', response);
-                        if (response === 'success') {
-                            alert('注册成功！');
-                            window.location.href = '${pageContext.request.contextPath}/user/login';
-                        } else {
-                            $('#errorMessage').text(response).show();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('注册错误:', error);
-                        $('#errorMessage').text('注册失败，请稍后重试').show();
+                $.post('${pageContext.request.contextPath}/user/register', {
+                    username: username,
+                    email: email,
+                    phone: phone,
+                    password: password,
+                    confirmPassword: confirmPassword,
+                    verificationCode: verificationCode
+                }, function(response) {
+                    if (response === 'success') {
+                        alert('注册成功！');
+                        window.location.href = '${pageContext.request.contextPath}/user/login';
+                    } else {
+                        alert(response);
                     }
                 });
-                
-                return false;
             });
         });
     </script>
 </body>
-</html> 
+</html>
