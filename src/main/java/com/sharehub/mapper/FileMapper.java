@@ -8,25 +8,34 @@ import java.util.List;
 @Mapper
 public interface FileMapper {
     /**
-     * 插入文件记录
-     * @param file 文件信息
-     * @return 影响行数
+     * 获取所有文件
      */
-    int insert(File file);
-
+    List<File> selectAll();
+    
     /**
      * 根据ID查询文件
-     * @param id 文件ID
-     * @return 文件信息
      */
     File selectById(Long id);
-
+    
     /**
-     * 根据用户ID查询文件列表
-     * @param userId 用户ID
-     * @return 文件列表
+     * 根据用户ID查询文件
      */
     List<File> selectByUserId(Long userId);
+    
+    /**
+     * 添加文件
+     */
+    int insert(File file);
+    
+    /**
+     * 更新文件信息
+     */
+    int update(File file);
+    
+    /**
+     * 删除文件
+     */
+    int delete(Long id);
 
     /**
      * 分页查询文件列表
@@ -53,11 +62,4 @@ public interface FileMapper {
      * @return 影响行数
      */
     int updateStatus(@Param("id") Long id, @Param("status") Integer status);
-
-    /**
-     * 删除文件记录
-     * @param id 文件ID
-     * @return 影响行数
-     */
-    int deleteById(Long id);
 } 

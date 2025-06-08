@@ -16,10 +16,8 @@ public class FileServiceImpl implements FileService {
     private FileMapper fileMapper;
 
     @Override
-    @Transactional
-    public Long uploadFile(File file) {
-        fileMapper.insert(file);
-        return file.getId();
+    public List<File> getAllFiles() {
+        return fileMapper.selectAll();
     }
 
     @Override
@@ -28,30 +26,25 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<File> getUserFiles(Long userId) {
+    public List<File> getFilesByUserId(Long userId) {
         return fileMapper.selectByUserId(userId);
     }
 
     @Override
-    public List<File> getUserFilesByPage(Long userId, int page, int size) {
-        int offset = (page - 1) * size;
-        return fileMapper.selectPage(userId, offset, size);
-    }
-
-    @Override
-    public int getUserFileCount(Long userId) {
-        return fileMapper.countByUserId(userId);
+    @Transactional
+    public boolean addFile(File file) {
+        return fileMapper.insert(file) > 0;
     }
 
     @Override
     @Transactional
-    public void updateFileStatus(Long id, int status) {
-        fileMapper.updateStatus(id, status);
+    public boolean updateFile(File file) {
+        return fileMapper.update(file) > 0;
     }
 
     @Override
     @Transactional
-    public void deleteFile(Long id) {
-        fileMapper.deleteById(id);
+    public boolean deleteFile(Long id) {
+        return fileMapper.delete(id) > 0;
     }
-} 
+}

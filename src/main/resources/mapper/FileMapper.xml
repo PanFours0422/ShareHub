@@ -5,61 +5,61 @@
 <mapper namespace="com.sharehub.mapper.FileMapper">
     <!-- 基础列 -->
     <sql id="Base_Column_List">
-        id, user_id, file_name, file_path, file_size, file_type, create_time, update_time, status
+        f.id, f.user_id, f.file_name, f.file_path, f.file_size, f.file_type, f.status, f.create_time, f.update_time,
+        u.username
     </sql>
 
-    <!-- 插入文件 -->
-    <insert id="insert" parameterType="com.sharehub.entity.File" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO file (user_id, file_name, file_path, file_size, file_type)
-        VALUES (#{userId}, #{fileName}, #{filePath}, #{fileSize}, #{fileType})
-    </insert>
+    <!-- 获取所有文件 -->
+    <select id="selectAll" resultType="com.sharehub.entity.File">
+        SELECT <include refid="Base_Column_List"/>
+        FROM file f
+        LEFT JOIN user u ON f.user_id = u.id
+        WHERE f.status = 1
+        ORDER BY f.create_time DESC
+    </select>
 
     <!-- 根据ID查询文件 -->
     <select id="selectById" resultType="com.sharehub.entity.File">
         SELECT <include refid="Base_Column_List"/>
-        FROM file
-        WHERE id = #{id}
-        AND status = 1
+        FROM file f
+        LEFT JOIN user u ON f.user_id = u.id
+        WHERE f.id = #{id}
+        AND f.status = 1
     </select>
 
-    <!-- 根据用户ID查询文件列表 -->
+    <!-- 根据用户ID查询文件 -->
     <select id="selectByUserId" resultType="com.sharehub.entity.File">
         SELECT <include refid="Base_Column_List"/>
-        FROM file
-        WHERE user_id = #{userId}
-        AND status = 1
-        ORDER BY create_time DESC
+        FROM file f
+        LEFT JOIN user u ON f.user_id = u.id
+        WHERE f.user_id = #{userId}
+        AND f.status = 1
+        ORDER BY f.create_time DESC
     </select>
 
-    <!-- 分页查询文件列表 -->
-    <select id="selectPage" resultType="com.sharehub.entity.File">
-        SELECT <include refid="Base_Column_List"/>
-        FROM file
-        WHERE user_id = #{userId}
-        AND status = 1
-        ORDER BY create_time DESC
-        LIMIT #{offset}, #{limit}
-    </select>
+    <!-- 添加文件 -->
+    <insert id="insert" parameterType="com.sharehub.entity.File" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO file (user_id, file_name, file_path, file_size, file_type, status)
+        VALUES (#{userId}, #{fileName}, #{filePath}, #{fileSize}, #{fileType}, #{status})
+    </insert>
 
-    <!-- 统计用户文件总数 -->
-    <select id="countByUserId" resultType="int">
-        SELECT COUNT(*)
-        FROM file
-        WHERE user_id = #{userId}
-        AND status = 1
-    </select>
-
-    <!-- 更新文件状态 -->
-    <update id="updateStatus">
+    <!-- 更新文件信息 -->
+    <update id="update" parameterType="com.sharehub.entity.File">
         UPDATE file
-        SET status = #{status},
-            update_time = CURRENT_TIMESTAMP
+        <set>
+            <if test="fileName != null">file_name = #{fileName},</if>
+            <if test="filePath != null">file_path = #{filePath},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="fileType != null">file_type = #{fileType},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
         WHERE id = #{id}
     </update>
 
-    <!-- 删除文件记录 -->
-    <delete id="deleteById">
-        DELETE FROM file
+    <!-- 删除文件 -->
+    <update id="delete">
+        UPDATE file
+        SET status = 0
         WHERE id = #{id}
-    </delete>
+    </update>
 </mapper> 

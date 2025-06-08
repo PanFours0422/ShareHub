@@ -9,9 +9,12 @@ public class File {
     private String filePath;
     private Long fileSize;
     private String fileType;
+    private Integer status;
     private Date createTime;
     private Date updateTime;
-    private Integer status;
+    
+    // 关联的用户信息
+    private String username;
 
     // Getters and Setters
     public Long getId() {
@@ -62,6 +65,14 @@ public class File {
         this.fileType = fileType;
     }
 
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -78,11 +89,11 @@ public class File {
         this.updateTime = updateTime;
     }
 
-    public Integer getStatus() {
-        return status;
+    public String getUsername() {
+        return username;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setUsername(String username) {
+        this.username = username;
     }
 } 

@@ -16,6 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.io.FileInputStream;
 
 @Controller
 @RequestMapping("/file")
@@ -27,22 +30,24 @@ public class FileController {
     private static final String UPLOAD_DIR = "uploads";
 
     @GetMapping("/list")
-    public String listFiles(HttpSession session, Model model,
-                          @RequestParam(defaultValue = "1") int page,
-                          @RequestParam(defaultValue = "10") int size) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/user/login";
+    public String toList(Model model, HttpSession session) {
+        // 检查是否是管理员
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (isAdmin != null && isAdmin) {
+            // 管理员查看所有文件
+            List<File> files = fileService.getAllFiles();
+            model.addAttribute("files", files);
+            return "admin/file";
+        } else {
+            // 普通用户查看自己的文件
+            Long userId = (Long) session.getAttribute("userId");
+            if (userId == null) {
+                return "redirect:/user/login";
+            }
+            List<File> files = fileService.getFilesByUserId(userId);
+            model.addAttribute("files", files);
+            return "file/list";
         }
-
-        List<File> files = fileService.getUserFilesByPage(userId, page, size);
-        int total = fileService.getUserFileCount(userId);
-        int totalPages = (int) Math.ceil((double) total / size);
-
-        model.addAttribute("files", files);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", totalPages);
-        return "file/list";
     }
 
     @PostMapping("/upload")
@@ -73,77 +78,63 @@ public class FileController {
             fileEntity.setFilePath(filePath.toString());
             fileEntity.setFileSize(file.getSize());
             fileEntity.setFileType(file.getContentType());
+            fileEntity.setStatus(1);
 
-            fileService.uploadFile(fileEntity);
-            return "上传成功";
+            if (fileService.addFile(fileEntity)) {
+                return "上传成功";
+            } else {
+                return "上传失败";
+            }
         } catch (IOException e) {
             return "上传失败：" + e.getMessage();
         }
     }
 
     @GetMapping("/download/{id}")
-    public void downloadFile(@PathVariable Long id,
-                           HttpSession session,
-                           javax.servlet.http.HttpServletResponse response) throws IOException {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            response.sendError(401, "请先登录");
-            return;
-        }
-
+    public void downloadFile(@PathVariable Long id, HttpServletResponse response) throws IOException {
         File file = fileService.getFileById(id);
-        if (file == null || !file.getUserId().equals(userId)) {
-            response.sendError(404, "文件不存在");
-            return;
-        }
-
-        Path filePath = Paths.get(file.getFilePath());
-        if (!Files.exists(filePath)) {
-            response.sendError(404, "文件不存在");
-            return;
-        }
-
-        // 设置响应头
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-Disposition", "attachment; filename=\"" + 
-            new String(file.getFileName().getBytes("UTF-8"), "ISO-8859-1") + "\"");
-        response.setHeader("Content-Length", String.valueOf(Files.size(filePath)));
-        
-        // 写入响应流
-        try (InputStream in = Files.newInputStream(filePath);
-             OutputStream out = response.getOutputStream()) {
-            byte[] buffer = new byte[4096];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+        if (file != null) {
+            java.io.File physicalFile = new java.io.File(file.getFilePath());
+            if (physicalFile.exists()) {
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" + 
+                    URLEncoder.encode(file.getFileName(), "UTF-8"));
+                response.setContentLengthLong(physicalFile.length());
+                
+                try (InputStream in = new FileInputStream(physicalFile);
+                     OutputStream out = response.getOutputStream()) {
+                    byte[] buffer = new byte[4096];
+                    int bytesRead;
+                    while ((bytesRead = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
             }
-            out.flush();
         }
     }
 
     @PostMapping("/delete/{id}")
     @ResponseBody
     public String deleteFile(@PathVariable Long id, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "请先登录";
+        // 检查是否是管理员
+        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+        if (isAdmin != null && isAdmin) {
+            // 管理员可以删除任何文件
+            if (fileService.deleteFile(id)) {
+                return "success";
+            }
+        } else {
+            // 普通用户只能删除自己的文件
+            Long userId = (Long) session.getAttribute("userId");
+            if (userId != null) {
+                File file = fileService.getFileById(id);
+                if (file != null && file.getUserId().equals(userId)) {
+                    if (fileService.deleteFile(id)) {
+                        return "success";
+                    }
+                }
+            }
         }
-
-        File file = fileService.getFileById(id);
-        if (file == null || !file.getUserId().equals(userId)) {
-            return "文件不存在";
-        }
-
-        try {
-            // 删除物理文件
-            Path filePath = Paths.get(file.getFilePath());
-            Files.deleteIfExists(filePath);
-
-            // 删除数据库记录
-            fileService.deleteFile(id);
-            return "删除成功";
-        } catch (IOException e) {
-            return "删除失败：" + e.getMessage();
-        }
+        return "删除失败";
     }
 } 

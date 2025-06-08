@@ -37,4 +37,39 @@
         WHERE phone = #{phone}
         AND status = 1
     </select>
+
+    <!-- 获取所有用户 -->
+    <select id="selectAll" resultType="com.sharehub.entity.User">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE status = 1
+    </select>
+
+    <!-- 根据ID查询用户 -->
+    <select id="selectById" resultType="com.sharehub.entity.User">
+        SELECT <include refid="Base_Column_List"/>
+        FROM user
+        WHERE id = #{id}
+        AND status = 1
+    </select>
+
+    <!-- 更新用户信息 -->
+    <update id="update" parameterType="com.sharehub.entity.User">
+        UPDATE user
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 删除用户 -->
+    <update id="delete">
+        UPDATE user
+        SET status = 0
+        WHERE id = #{id}
+    </update>
 </mapper> 

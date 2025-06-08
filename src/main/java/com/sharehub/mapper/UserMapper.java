@@ -3,6 +3,7 @@ package com.sharehub.mapper;
 import com.sharehub.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 @Mapper
 public interface UserMapper {
@@ -33,4 +34,24 @@ public interface UserMapper {
      * @return 用户信息
      */
     User selectByPhone(String phone);
+
+    /**
+     * 更新用户信息
+     */
+    int update(User user);
+
+    /**
+     * 删除用户
+     */
+    int delete(Long id);
+
+    /**
+     * 获取所有用户
+     */
+    List<User> selectAll();
+
+    /**
+     * 根据ID查询用户
+     */
+    User selectById(Long id);
 } 
